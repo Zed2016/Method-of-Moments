@@ -10,6 +10,34 @@ if mod(num,1) ~= 0
     error('the N is a wrong number ! It must be a square number')
 end
 syms x y;
+for i = 1:n
+    if mod(num,2) == 1  %每行分块为单数情况，原点在最中心分块的中心，以此为参考系
+        ref = [fix(num/2)+1,fix(num/2)+1];
+        %第i个分块的编号
+        if mod(i,num) == 0  
+            position_i = [i/num + 1,num];
+        else
+            position_i = [i/num + 1,mod(i,num)];
+        end
+        %第i个分块中心点坐标
+        posx(i) = (position_i(1) - ref(1))*2*b;
+        posy(i) = (position_i(2) - ref(2))*2*b;
+    else    %每行分块为双数的情况，原点在四个分块的顶点上，以第四象限上的分块为参考系
+        ref = [num/2,num/2];
+        %第i个分块的编号
+        if mod(i,num) == 0
+            position_i = [i/num + 1,num];
+        else
+            position_i = [i/num + 1,mod(i,num)];
+        end
+        %第i个分块中心点坐标
+        posx(i) = (position_i(1) - ref(1))*2*b-b;
+        posy(i) = (position_i(2) - ref(2))*2*b+b;
+    end
+    %构建基函数
+    fn(i) = piecewise(abs(x-posx(i))<=b & abs(y-posy(i))<=b,1,0);
+end        
+        
 %lmn是delta_Sn上单位振幅的均匀电荷密度在delta_Sm的中心处产生的电位
 for i = 1:n
     for j = 1:n
@@ -29,4 +57,3 @@ for i = 1:n
 end
 a = lmn\gm';
 val = 0:0.01:1;
-plot(val,eval(subs(f,x,val)));
