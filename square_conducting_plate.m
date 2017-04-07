@@ -44,10 +44,20 @@ for i = 1:n
         if i == j
             lmn(i,i) = 2*b/(pi*epsilon)*0.8814;
         else
-            xm = mod(i,n);
-            xn = mod(j,n);
-            ym = i/n + 1;
-            yn = j/n + 1;
+            if mod(i,n) == 0
+                xm = n;
+                ym = i/n;
+            else
+                xm = mod(i,n);
+                ym = i/n +1;
+            end
+            if mod(j,n) == 0
+                xn = n;
+                yn = j/n;
+            else
+                xn = mod(j,n);
+                yn = j/n + 1;
+            end
             deltax = 2*b*(xm-xn);   %Xm与Xn之间的距离
             deltay = 2*b*(ym-yn);   %Ym与Yn之间的距离
             lmn(i,j) = b^2 / (pi*epsilon* ( deltax^2 + deltay^2)^0.5 );
