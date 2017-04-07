@@ -9,62 +9,38 @@ epsilon = 8.854187817e-12;   %真空中的介电常数
 if mod(num,1) ~= 0
     error('the N is a wrong number ! It must be a square number')
 end
-syms x y;
-for i = 1:n
-    if mod(num,2) == 1  %每行分块为单数情况，原点在最中心分块的中心，以此为参考系
-        ref = [fix(num/2)+1,fix(num/2)+1];
-        %第i个分块的编号
-        if mod(i,num) == 0  
-            position_i = [fix(i/num),num];
-        else
-            position_i = [fix(i/num) + 1,mod(i,num)];
-        end
-        %第i个分块中心点坐标
-        posx(i) = (position_i(2) - ref(2))*2*b;
-        posy(i) = -(position_i(1) - ref(1))*2*b;
-    else    %每行分块为双数的情况，原点在四个分块的顶点上，以第四象限上的分块为参考系
-        ref = [num/2,num/2];
-        %第i个分块的编号
-        if mod(i,num) == 0
-            position_i = [fix(i/num),num];
-        else
-            position_i = [fix(i/num) + 1,mod(i,num)];
-        end
-        %第i个分块中心点坐标
-        posx(i) = (position_i(2) - ref(2))*2*b -b;
-        posy(i) = -(position_i(1) - ref(1))*2*b +b;
-    end
-    %构建基函数
-    fn(i) = piecewise(abs(x-posx(i))<=b & abs(y-posy(i))<=b,1,0);
-end        
-        
+syms x y;         
 %lmn是delta_Sn上单位振幅的均匀电荷密度在delta_Sm的中心处产生的电位
 for i = 1:n
     for j = 1:n
-        if i == j
-            lmn(i,i) = 2*b/(pi*epsilon)*0.8814;
-        else
-            if mod(i,n) == 0
-                xm = n;
-                ym = i/n;
+        if i == j   % m=n的情况
+            lmn(i,j) = 2*b/(pi*epsilon) *0.8814;
+        else        % m~=n的情况
+            if mod(i,num) == 0
+                xm = fix(i/num);
+                ym = num;
             else
-                xm = mod(i,n);
-                ym = i/n +1;
+                xm = fix(i/num) +1;
+                ym = mod(i,num);
             end
-            if mod(j,n) == 0
-                xn = n;
-                yn = j/n;
+            if mod(j,num) == 0
+                xn = j/num;
+                yn = num;
             else
-                xn = mod(j,n);
-                yn = j/n + 1;
+                xn = fix(j/num) + 1;
+                yn = mod(j,num);
             end
             deltax = 2*b*(xm-xn);   %Xm与Xn之间的距离
             deltay = 2*b*(ym-yn);   %Ym与Yn之间的距离
-            lmn(i,j) = b^2 / (pi*epsilon* ( deltax^2 + deltay^2)^0.5 );
+            %disp(['i=',num2str(i),'j=',num2str(j),' ',num2str([xm,ym,xn,yn])])
+            %验证编号问题，成功
+            test(i,1) = xm;test(i,2) = ym;test(i,3) = xn;test(i,4) = yn;
+            lmn(i,j) = b^2 / (pi*epsilon* (deltax^2 + deltay^2)^0.5 );
         end
     end
     gm(i) = v;
 end
-a = lmn\gm';
-val = 0:0.01:1;
-fn = a*fn;
+a = lmn\gm';    %好像只要求出alpha，然后将其reshape就行了
+a_reshape = reshape(a,num,num);
+c = 4*b*b*sum(a);   %电容
+surf(a_reshape);
