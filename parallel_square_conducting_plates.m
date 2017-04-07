@@ -49,3 +49,4 @@ gm = ones(n,1);
 a = (lmn-ltb)\gm;
 a_reshape = reshape(a,num,num);
 c = 4*b*b*sum(a);
+surf(a_reshape);
