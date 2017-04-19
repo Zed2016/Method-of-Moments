@@ -7,15 +7,10 @@ fa = 5/6*x -1/2*x^2 -1/3*x^4;   %实际解
 for i = 1:n
     %基函数为三角形函数，检验函数为脉冲函数
     xm = i * 1/(n+1);
-    fn(i) = (1-abs(x-xm)*(n+1)) .* ( x - xm < (1/(n+1)) &  x - xm > -(1/(n+1)));     
+    %两种定义基函数的方法同样有用，在这里选择内置piecewise函数
+    %fn(i) = (1-abs(x-xm)*(n+1)) .* ( x - xm < (1/(n+1)) &  x - xm > -(1/(n+1)));
+    fn(i) = piecewise(abs(x - xm) < 1/(n+1) ,1-abs(x-xm)*(n+1),0);
 end
-%for i = 1:n
-%    for j = 1:n
-%         %在积分上出现了错误，应该是不能代逻辑值进去，如果换成function，感觉还是不能行
-%        lmn(i,j) = int(wn(i)*fn(j),x,0,1); 
-%    end
-%    gm(i) = int(wn(i)*g,x,0,1);
-%end
 lmn = ones(n,n);
 gm = ones(n,1);
 for i = 1:n
@@ -36,3 +31,6 @@ f = fn * a;
 plot(val,eval(subs(f,x,val)));
 hold
 plot(val,subs(fa,x,val));
+str=['N = ',num2str(n)];
+title(str);
+legend('矩量法解','精确值');

@@ -1,3 +1,4 @@
+clear;clc
 n = input('Input the N...\n')
 %Point matching
 syms x;
@@ -18,4 +19,7 @@ f = fn*a;
 val = 0:0.01:1;
 plot(val,subs(f,val),'p')
 hold on
-plot(val,subs(fa,val),'r')  
+plot(val,subs(fa,val),'r')
+str=['N = ',num2str(n)];
+title(str);
+legend('矩量法解','精确值');
