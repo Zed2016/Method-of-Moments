@@ -1,4 +1,5 @@
 clear;clc;
+time = clock;
 n = input('Input the N...\n')
 %subsectional bases
 syms x;
@@ -26,7 +27,7 @@ for i = 1:n
     gm(i) = 1/(n+1) * (1+(4*i^2+1/3)/(n+1)^2);
 end
 a = lmn\gm;
-val = 0:0.01:1;
+val = 0:0.05:1;
 f = fn * a;
 plot(val,eval(subs(f,x,val)));
 hold
@@ -34,3 +35,5 @@ plot(val,subs(fa,x,val));
 str=['N = ',num2str(n)];
 title(str);
 legend('矩量法解','精确值');
+time = clock - time;
+disp(time(4:6))
