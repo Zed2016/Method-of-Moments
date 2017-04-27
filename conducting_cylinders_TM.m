@@ -5,8 +5,8 @@ gamma = 1.78107;     %欧拉常数
 eta = 120*pi;         %真空中的波阻抗
 lambda = 1;           %波长
 k = 2*pi / lambda;    %波数
-phi_i = 0;            %入射角度
-phi_s = pi;           %散射角度
+phi_i = pi;           %入射角度
+phi_s = 0;            %散射角度
 %散射截面sigma定义为宽度（三维中为面积）与散射电场强度与入射电场强度比值平方的乘积
 %每个lmn表示由在（xn，yn）点的函数fn，在（xm，ym）点产生的场E
 %lmn可以利用（3-24）计算
@@ -41,8 +41,21 @@ for index_i = 1:n
     end
     gm(index_i) = exp(j*k*(xm(index_i)*cos(phi_i)+ym(index_i)*sin(phi_i)));
     vim(index_i) = delta_c(index_i) * exp(j*k*(xm(index_i)*cos(phi_i)+ym(index_i)*sin(phi_i)));
-    vsn(index_i) = delta_c(index_i) * exp(j*k*(xm(index_i)*cos(phi_i)+ym(index_i)*sin(phi_i)));
+    vsn(index_i) = delta_c(index_i) * exp(j*k*(xm(index_i)*cos(phi_s)+ym(index_i)*sin(phi_s)));
 end
 
 alpha = lmn\gm';
-sigma = k*eta^2/4 * ( vsn*inv(zmn)*vim' )^2;
+sigma = k*eta^2/4 * abs(( vsn*inv(zmn)*vim' ))^2;
+
+subplot(2,2,1);
+plot(real(alpha));
+title('Real');
+subplot(2,2,2);
+plot(imag(alpha));
+title('Imag');
+subplot(2,2,3);
+plot(abs(alpha));
+title('Abs');
+subplot(2,2,4);
+plot(angle(alpha));
+title('Phase');
