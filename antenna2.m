@@ -1,6 +1,6 @@
 clear;clc
 %n = input('Input the number of delta C\n');
-n = 99
+n = 64
 mu = 4*pi*10^-7;      %真空中的磁导率
 epsilon = 8.854187817e-12;   %真空中的介电常数
 lambda = 1;           %波长
@@ -21,22 +21,24 @@ for index_y = 1:250
     zmn = zeros(n);     %阻抗矩阵
     v = zeros(n,1);     %电压矩阵
     v(50) = 1;          %在中点加激励电压
-
+    psi = zeros(1:5);
+    l_points(:,1) = 0 : l/(2*n) : l;
+    
     for index_i = 1:n
         for index_j = 1:n
-            zmn(index_i,index_j) = j*w*mu*delta_l*delta_l*my_psi(position_i(index_j),position_i(index_i),delta_l,k,a)+1/(j*w*epsilon)*...
-                (   my_psi(position_i_plus(index_j),position_i_plus(index_i),delta_l,k,a)       ...%++
-                   -my_psi(position_i_plus(index_j),position_i_minuts(index_i),delta_l,k,a)     ...%-+
-                   -my_psi(position_i_minuts(index_j),position_i_plus(index_i),delta_l,k,a)     ...%+-
-                   +my_psi(position_i_minuts(index_j),position_i_minuts(index_i),delta_l,k,a)   ); %--
+            psi = cal_psi8(index_i,index_j,a,k,delta_l,l_points);
+            zmn(index_i,index_j) = j*w*mu*delta_l*delta_l*psi(1)+1/(j*w*epsilon)*(psi(2) - psi(3) - psi(4) + psi(5));
         end
     end
     ymn = inv(zmn);         
     alpha = ymn*v;
-    zz(index_y) = ymn(50,50);
+    zz(index_y) = ymn(32,32);
 end
-plot(real(zz));
+xrange = 0.01:0.01:2.5;
+plot(xrange,real(zz));
 title('Real\_Y')
+xlabel('l/lambda')
 figure();
-plot(imag(zz));
+plot(xrange,imag(zz));
 title('Imag\_Y')
+xlabel('l/lambda')
